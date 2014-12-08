@@ -12,31 +12,27 @@
 # GNU General Public License for more details.
 #
 
+TARGET := fbtool
 
-TARGET = fbtool.exe
+SOURCES := \
+	fbtool.c\
+	cmds/start_cmd.c \
+	cmds/get_hw_code.c \
+	cmds/get_target_config.c \
+	cmds/send_auth.c \
+	cmds/send_da.c \
+	cmds/jump_da.c \
+	utils/file_util.c \
+	utils/tty_usb_common.c \
+	utils/tty_usb_linux.c
 
-INCLUDES = /Iinc /Iinc\win
+CFLAGS += -Iinc
 
-SOURCES = \
-        fbtool.c \
-        cmds\start_cmd.c \
-        cmds\get_hw_code.c \
-        cmds\get_target_config.c \
-        cmds\send_auth.c \
-        cmds\send_da.c \
-        cmds\jump_da.c \
-        utils\file_util.c \
-        utils\tty_usb_win.c \
-        utils\tty_usb_common.c \
-        utils\util_win.c
+.PHONY: all clean
 
-OBJS = 
+all: $(TARGET)
 
-LIBS = Ws2_32.lib
+$(TARGET): $(SOURCES)
 
-all:$(TARGET)
-
-$(TARGET):$(SOURCES)
-    mkdir out-win
-	cl /Iinc /Iinc\win /Feout-win\fbtool.exe $(SOURCES) $(LIBS)
-	del *.obj
+clean:
+	$(RM) $(TARGET)
