@@ -23,46 +23,46 @@ typedef struct {
     char            m_identifier[12];   // including '\0'
     uint32_t        m_ver;
     uint32_t        m_dev_rw_unit;      // NAND: in page
-                                        // NOR/eMMC/SFlash: in byte 
+                                        // NOR/eMMC/SFlash: in byte
 } EMMC_HEADER_v1;
 
 typedef struct {
     uint32_t        m_bl_exist_magic;
     uint8_t         m_bl_dev;               // 1B
     uint16_t        m_bl_type;              // 2B
-    uint32_t        m_bl_begin_dev_addr;    // device addr that points to the beginning of BL 
-                                            // NAND: page addr 
+    uint32_t        m_bl_begin_dev_addr;    // device addr that points to the beginning of BL
+                                            // NAND: page addr
                                             //      SEQUENTIAL: phy page addr
-                                            //      TTBL: TTBL logic page addr 
+                                            //      TTBL: TTBL logic page addr
                                             //      FDM5: FDM5.0 logic page addr
-                                            // NOR/eMMC/SFlash: byte addr 
+                                            // NOR/eMMC/SFlash: byte addr
 
-    uint32_t        m_bl_boundary_dev_addr; // device addr that points to the boundary of BL 
-                                            // boundary addr = BL addr + BL length 
-                                            // NAND: page addr 
+    uint32_t        m_bl_boundary_dev_addr; // device addr that points to the boundary of BL
+                                            // boundary addr = BL addr + BL length
+                                            // NAND: page addr
                                             //      SEQUENTIAL: phy page addr
-                                            //      TTBL: TTBL logic page addr 
+                                            //      TTBL: TTBL logic page addr
                                             //      FDM5: FDM5.0 logic page addr
-                                            // NOR/eMMC/SFlash: byte addr 
+                                            // NOR/eMMC/SFlash: byte addr
 
-    uint32_t        m_bl_attribute;         // refer to GFH_BL_INFO 
+    uint32_t        m_bl_attribute;         // refer to GFH_BL_INFO
 } BL_Descriptor;
 
 typedef struct {
     char            m_identifier[8];        // including '\0'
     uint32_t        m_ver;                  // this structure will directly export to others, version field is necessary
-    uint32_t        m_boot_region_dev_addr; // device addr that points to the beginning of the boot region 
-                                            // NAND: page addr 
+    uint32_t        m_boot_region_dev_addr; // device addr that points to the beginning of the boot region
+                                            // NAND: page addr
                                             //      SEQUENTIAL: phy page addr
-                                            //      TTBL: TTBL logic page addr 
+                                            //      TTBL: TTBL logic page addr
                                             //      FDM5: FDM5.0 logic page addr
-                                            // NOR/eMMC/SFlash: byte addr 
+                                            // NOR/eMMC/SFlash: byte addr
 
-    uint32_t        m_main_region_dev_addr; // device addr that points to the beginning of the main code region 
-                                            // NAND: page addr 
+    uint32_t        m_main_region_dev_addr; // device addr that points to the beginning of the main code region
+                                            // NAND: page addr
                                             //      SEQUENTIAL: phy page addr
                                             //      FDM5: FDM5.0 logic page addr
-                                            // NOR/eMMC/SFlash: byte addr 
+                                            // NOR/eMMC/SFlash: byte addr
     BL_Descriptor   m_bl_desc;
 } BR_Layout_v1;
 
@@ -99,9 +99,9 @@ void strip_pl_hdr(void *pl, size_t len_pl, void **strip_pl, size_t *len_strip_pl
 
         if(ehdr->m_dev_rw_unit + sizeof(BR_Layout_v1) > len_pl)
         {
-            printf("ERROR: EMMC HDR error. dev_rw_unit=%x, brlyt_size=%x, len_pl=%x\n",
-                        ehdr->m_dev_rw_unit, 
-                        sizeof(BR_Layout_v1), 
+            printf("ERROR: EMMC HDR error. dev_rw_unit=%x, brlyt_size=%zx, len_pl=%zx\n",
+                        ehdr->m_dev_rw_unit,
+                        sizeof(BR_Layout_v1),
                         len_pl);
             exit(EXIT_FAILURE);
         }
@@ -128,10 +128,10 @@ void strip_pl_hdr(void *pl, size_t len_pl, void **strip_pl, size_t *len_strip_pl
         if(gfh->m_file_len < (gfh->m_jump_offset + gfh->m_sig_len))
         {
             // gfh error
-            printf("ERROR: GFH error. len_pl=%x, file_len=%x, jump_offset=%x, sig_len=%x\n",
-                        len_pl, 
-                        gfh->m_file_len, 
-                        gfh->m_jump_offset, 
+            printf("ERROR: GFH error. len_pl=%zx, file_len=%x, jump_offset=%x, sig_len=%x\n",
+                        len_pl,
+                        gfh->m_file_len,
+                        gfh->m_jump_offset,
                         gfh->m_sig_len);
             exit(EXIT_FAILURE);
         }
@@ -325,7 +325,7 @@ int main(int argc, char *argv[])
     }
 
     tty_usb_close(h);
-    
+
     return 0;
 }
 
