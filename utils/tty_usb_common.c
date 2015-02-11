@@ -126,7 +126,11 @@ uint32_t tty_usb_r32(tty_usb_handle *h)
 int tty_usb_w32_echo(tty_usb_handle *h, uint32_t data)
 {
     tty_usb_w32(h, data);
+#ifdef LINUX
+    if(tty_usb_r32(h)!=data) return 0;
+#else
     if(tty_usb_r32(h)!=data) return -1;
+#endif
     return 0;
 }
 

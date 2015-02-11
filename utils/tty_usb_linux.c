@@ -135,7 +135,9 @@ size_t tty_usb_read(tty_usb_handle *h, void *data, size_t len)
     size_t r_len = 0;
     uint8_t *p = (uint8_t*)data;
 
+#ifndef LINUX
     while(len > 0)
+#endif
     {
         ssize_t r = read(h->fd, p, len);
         if(r == -1) exit(EXIT_FAILURE);
