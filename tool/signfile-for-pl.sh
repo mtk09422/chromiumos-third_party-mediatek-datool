@@ -37,32 +37,51 @@ TMPFILE2=$(mktemp)
 
 python -c "
 import hashlib
+import struct
+import os
+
+file_len = os.path.getsize('$2')
+b = struct.pack('16I', \
+         0x53535353, 0x54535543, 0x00000000, 0x00000000, \
+         0x00000000, 0x00000000, 0x00000000, 0x00000000, \
+         0x00000000, 0x00000001, file_len, 0x00000040, \
+         0x00000000, file_len, file_len+0x40, 0x00000094, )
 
 f = open('$2', 'rb')
-b = f.read()
+b += f.read()
 f.close()
 
-d = hashlib.sha256(b).digest()
-b = '\0\0'
-for i in range(0, len(d), 2):
-       b += d[i + 1] + d[i]
-b += '\0' * 222
+d = hashlib.sha1(b).digest()
 
 f = open('${TMPFILE1}', 'wb')
-f.write(b)
+f.write(d)
 f.close()
 "
 
-openssl rsautl -sign -inkey $1 -raw -in ${TMPFILE1} -out ${TMPFILE2} 
+openssl rsautl -sign -inkey $1 -in ${TMPFILE1} -out ${TMPFILE2}
 RET=$?
 
 python -c "
+import struct
+import os
+
+file_len = os.path.getsize('$2')
+b = struct.pack('16I', \
+         0x53535353, 0x54535543, 0x00000000, 0x00000000, \
+         0x00000000, 0x00000000, 0x00000000, 0x00000000, \
+         0x00000000, 0x00000001, file_len, 0x00000040, \
+         0x00000000, file_len, file_len+0x40, 0x00000094, )
+
 f = open('${TMPFILE2}', 'rb')
-d = f.read()
+b += f.read()
 f.close()
-b = ''
-for i in range(0, len(d), 2):
-        b += d[i + 1] + d[i]
+
+f = open('${TMPFILE1}', 'rb')
+b += f.read(20)
+f.close()
+
+b += '\0' * 44
+
 f = open('$2.sign', 'wb')
 f.write(b)
 f.close()

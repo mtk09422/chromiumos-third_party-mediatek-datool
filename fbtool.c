@@ -144,6 +144,7 @@ void strip_pl_hdr(void *pl, size_t len_pl, void **strip_pl, size_t *len_strip_pl
 enum CHIP_ID {
     CHIP_ID_DEFAULT,
     CHIP_ID_MT8135,
+    CHIP_ID_MT8127,
     CHIP_ID_MT6595,
     CHIP_ID_MT8173,
 };
@@ -157,6 +158,7 @@ typedef struct {
 CHIP_DATA chip_tbl[] = {
     {CHIP_ID_DEFAULT, 0x00201000, 0x40001000},
     {CHIP_ID_MT8135,  0x12001000, 0x80001000},
+    {CHIP_ID_MT8127,  0x00201000, 0x80001000},
     {CHIP_ID_MT6595,  0x00201000, 0x40001000},
     {CHIP_ID_MT8173,  0x000C1000, 0x40001000},
 };
@@ -164,8 +166,9 @@ CHIP_DATA chip_tbl[] = {
 CHIP_DATA* get_chip_data(uint16_t chip)
 {
     if(chip == 0x8135) return &(chip_tbl[1]);
-    if(chip == 0x6595) return &(chip_tbl[2]);
-    if(chip == 0x8172) return &(chip_tbl[3]);
+    if(chip == 0x8127) return &(chip_tbl[2]);
+    if(chip == 0x6595) return &(chip_tbl[3]);
+    if((chip == 0x8172) || (chip == 0x8176)) return &(chip_tbl[4]);
     return &(chip_tbl[0]);
 }
 

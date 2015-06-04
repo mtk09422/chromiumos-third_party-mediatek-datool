@@ -171,31 +171,43 @@ tty_usb_handle *tty_usb_open(ifc_match_func callback)
 
 size_t tty_usb_read(tty_usb_handle *h, void *data, size_t len)
 {
-    DWORD NumberOfBytesRead;
-    BOOL ret = ReadFile(h->com, data, len, &NumberOfBytesRead, NULL);
-    if(!ret || (NumberOfBytesRead != len)) exit(EXIT_FAILURE);
-    return NumberOfBytesRead;
+    size_t r_len = 0;
+    uint8_t* p = (uint8_t*)data;
+
+    while(len > 0)
+    {
+        DWORD NumberOfBytesRead;
+        BOOL ret = ReadFile(h->com, p, len, &NumberOfBytesRead, NULL);
+
+        if(!ret) exit(EXIT_FAILURE);
+
+        len   = len   - NumberOfBytesRead;
+        p     = p     + NumberOfBytesRead;
+        r_len = r_len + NumberOfBytesRead;
+    }
+    return r_len;
 }
 
 #define BUF_MAX 1024
 size_t tty_usb_write(tty_usb_handle *h, const void *data, size_t len)
 {
-    DWORD NumberOfBytesWritten;
     size_t r_len = 0;
-    BOOL ret;
     uint8_t* p = (uint8_t*)data;
     while(len > 0)
     {
+        DWORD NumberOfBytesWritten;
+        BOOL ret;
         size_t sz;
+
         if(len>BUF_MAX) sz=BUF_MAX;
         else sz=len;
 
         ret = WriteFile(h->com, p, sz, &NumberOfBytesWritten, NULL);
-        if(!ret || (NumberOfBytesWritten != sz)) exit(EXIT_FAILURE);
+        if(!ret) exit(EXIT_FAILURE);
 
-        len   = len   - sz;
-        p     = p     + sz;
-        r_len = r_len + sz;
+        len   = len   - NumberOfBytesWritten;
+        p     = p     + NumberOfBytesWritten;
+        r_len = r_len + NumberOfBytesWritten;
     }
     return r_len;
 }

@@ -1,18 +1,30 @@
-#
-# Copyright (c) 2014 MediaTek Inc.
-# Author: Tristan Shieh <tristan.shieh@mediatek.com>
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License version 2 as
-# published by the Free Software Foundation.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-
 #!/usr/bin/env python
+
+#
+# Copyright (C) 2015 MediaTek Inc. All rights reserved.
+# Tristan Shieh <tristan.shieh@mediatek.com>
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+# OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+# LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+# OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+# SUCH DAMAGE.
+#
 
 import os
 import struct
@@ -30,6 +42,7 @@ def padding(data, size, pattern = '\0'):
         return data + pattern * (size - len(data))
 
 LK_MEM_ADDRs = {'8135': 0x81e00000,
+                '8127': 0x81e00000,
                 '6595': 0x41e00000,
                 '8173': 0x41e00000}
 
@@ -44,6 +57,15 @@ boot_args = {
         0x00000000, 0x00000000, 0x822041c1, 0x51200655,
         0x92124805, 0x18420000, 0x3a00a284, 0xc0444890,
         0x1980a991, 0x04000099), 
+
+        '8127': struct.pack("27I",
+        0x504C504C, 0x00000063, 0x00000000, 0x11002000,
+        0x000E1000, 0x00000301, 0x00000001, 0x37C00000,
+        0x00000000, 0x00000000, 0x00000000, 0x00000003,
+        0x00000000, 0x00000000, 0x00002116, 0x00000000,
+        0x00000000, 0x00000000, 0x00000000, 0x00000000,
+        0x00000000, 0x00000000, 0xAFB50204, 0x00000000,
+        0x00000000, 0x00000000, 0x00008127),
 
         '6595': struct.pack("26I",
         0x504c504c, 0x00000063, 0x00000000, 0x11002000,
@@ -101,7 +123,9 @@ def main(argv):
         )
 
         o = padding(lk_wrapper, BOOTARG_OFFSET, '\0') + boot_arg + lk
-        write(argv[3], o)
+        # padding to even-sized output
+        write(argv[3], padding(o, len(o)+len(o)%2, '\0'))
+
 
 if __name__ == "__main__":
         main(sys.argv)

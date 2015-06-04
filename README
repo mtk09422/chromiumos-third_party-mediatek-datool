@@ -56,3 +56,9 @@
 		put fbtool-da-pl.bin and fbtool-da-pl.bin.sign in the same folder.
 		put fbtool-da-lk.bin and fbtool-da-lk.bin.sign in the same folder.
 
+3.3 usage with secure preloader (enable preloader secure DA verify)
+        Sign lk with ./tool/signfile-for-pl.sh
+
+	usage: signfile-for-pl.sh private-key.pem fbtool-da-lk.bin
+               the private-key.pem is generated from openssl rsa-1024.
+               and the fbtool-da-lk.bin.sign is generated.
